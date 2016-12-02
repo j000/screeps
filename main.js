@@ -3,7 +3,7 @@ require("overload.creep");
 require("overload.room");
 require("overload.roomposition");
 
-require("populations");
+var Population = require("populations");
 
 let Sites = require("sites");
 let Hive = require("hive");
