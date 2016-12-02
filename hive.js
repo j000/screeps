@@ -31,9 +31,9 @@ let Hive = {
 			return false;
 		}
 	},
-	
+
 	isPulse_Labs: function() {
-		let ticks = 2000;		
+		let ticks = 2000;
 		let lastTick = _.get(Memory, ["pulses", "lab"]);
 
 		if (lastTick == null
@@ -68,7 +68,7 @@ let Hive = {
 		return minTicks + Math.floor((1 - (Game.cpu.bucket / 10000)) * range);
 	},
 
-	
+
 	clearDeadMemory: function() {
 		if (!this.isPulse_Main())
 			return;
@@ -91,7 +91,7 @@ let Hive = {
 
 	initMemory: function() {
 		_CPU.Start("Hive", "initMemory");
-		
+
 		if (Memory["rooms"] == null) Memory["rooms"] = {};
 
 		for (let r in Game["rooms"]) {
@@ -105,7 +105,7 @@ let Hive = {
 
 		let _Console = require("util.console");
 		_Console.Init();
-		
+
 		_CPU.End("Hive", "initMemory");
 	},
 
@@ -124,7 +124,7 @@ let Hive = {
 		}
 	},
 
-	
+
 	populationTally: function(rmName, popTarget, popActual) {
 		// Tallies the target population for a colony, to be used for spawn load balancing
 		_.set(Memory, ["rooms", rmName, "population_balance", "target"], _.get(Memory, ["rooms", rmName, "population_balance", "target"], 0) + popTarget);
@@ -206,7 +206,7 @@ let Hive = {
 		_CPU.Start("Hive", "processSpawnRenewing");
 
 		let _Creep = require("util.creep");
-		let listSpawns = Object.keys(Game["spawns"]).filter((a) => 
+		let listSpawns = Object.keys(Game["spawns"]).filter((a) =>
 			{ return Game.spawns[a].spawning == null && Game.spawns[a].room.energyAvailable > 300; });
 		for (let s in listSpawns) {
 			let spawn = Game["spawns"][listSpawns[s]];
@@ -223,7 +223,7 @@ let Hive = {
 		_CPU.End("Hive", "processSpawnRenewing");
 	},
 
-	
+
 	sellExcessResources: function(overflow) {
 		if (!Hive.isPulse_Main())
 			return;
@@ -286,53 +286,53 @@ let Hive = {
 
 		_CPU.End("Hive", "moveExcessEnergy");
 	},
-	
-	
+
+
 	initLabs: function() {
 		if (!this.isPulse_Labs())
 			return;
 
 		// Reset stockpiles...
 		_.each(Memory["rooms"], r => { _.set(r, ["stockpile"], new Object()); });
-		
+
 		// Reset automated terminal orders
 		_.each(_.filter(_.keys(Memory["terminal_orders"]),
 			o => { return _.get(Memory, ["terminal_orders", o, "automated"]) == true; }),
 			o => { delete Memory["terminal_orders"][o]; });
-		
+
 		// Reset reagent targets, prevents accidental reagent pileup
-		_.each(_.filter(_.keys(_.get(Memory, ["labs", "targets"])), 
-			t => { return _.get(Memory, ["labs", "targets", t, "is_reagent"]) == true; }), 
+		_.each(_.filter(_.keys(_.get(Memory, ["labs", "targets"])),
+			t => { return _.get(Memory, ["labs", "targets", t, "is_reagent"]) == true; }),
 			t => delete Memory.labs.targets[t]);
-		
-		let targets = _.filter(_.get(Memory, ["labs", "targets"]), 
+
+		let targets = _.filter(_.get(Memory, ["labs", "targets"]),
 			t => {
 				if (_.get(t, "amount") < 0)
 					return true;
-				
+
 				let amount = 0;
-				_.each(_.filter(Game.rooms, 
-					r => { return r.controller != null && r.controller.my && (r.storage || r.terminal); }), 
+				_.each(_.filter(Game.rooms,
+					r => { return r.controller != null && r.controller.my && (r.storage || r.terminal); }),
 					r => { amount += r.store(_.get(t, "mineral")); });
-				return amount < _.get(t, "amount");				
+				return amount < _.get(t, "amount");
 			});
-			
+
 		_.each(targets, target => this.createReagentTargets(target));
 	},
-	
-	createReagentTargets: function(target) {		
-		_.each(getReagents(target.mineral), 
+
+	createReagentTargets: function(target) {
+		_.each(getReagents(target.mineral),
 			reagent => {
 				let amount = 0;
-				_.each(_.filter(Game.rooms, 
-					r => { return r.controller != null && r.controller.my && r.terminal; }), 
+				_.each(_.filter(Game.rooms,
+					r => { return r.controller != null && r.controller.my && r.terminal; }),
 					r => { amount += r.store(reagent); });
-				if (amount <= 1000 && !_.has(Memory, ["labs", "targets", reagent]) && getReagents(reagent) != null) {					
+				if (amount <= 1000 && !_.has(Memory, ["labs", "targets", reagent]) && getReagents(reagent) != null) {
 					console.log(`<font color=\"#A17BFF\">[Labs]</font> reagent ${reagent} missing for ${target.mineral}, creating target goal.`);
 					Memory.labs.targets[reagent] = { amount: target.amount, priority: target.priority, mineral: reagent, is_reagent: true };
 					this.createReagentTargets(Memory.labs.targets[reagent]);
-				} 
-			});		
+				}
+			});
 	},
 };
 

@@ -57,15 +57,15 @@ module.exports = {
 	runPopulation: function(rmColony, listCreeps, listSpawnRooms, listPopulation) {
 		let lCourier  = _.filter(listCreeps, (c) => c.memory.role == "courier" && (c.ticksToLive == undefined || c.ticksToLive > 80));
 
-        let popTarget = (listPopulation["courier"] == null ? 0 : listPopulation["courier"]["amount"]);
-        let popActual = lCourier.length;
-        Hive.populationTally(rmColony, popTarget, popActual);
+		let popTarget = (listPopulation["courier"] == null ? 0 : listPopulation["courier"]["amount"]);
+		let popActual = lCourier.length;
+		Hive.populationTally(rmColony, popTarget, popActual);
 
-        if (listPopulation["courier"] != null && lCourier.length < listPopulation["courier"]["amount"]) {
+		if (listPopulation["courier"] != null && lCourier.length < listPopulation["courier"]["amount"]) {
 			Memory["spawn_requests"].push({ room: rmColony, listRooms: listSpawnRooms, priority: 4, level: listPopulation["courier"]["level"],
 				scale_level: listPopulation["courier"] == null ? true : listPopulation["courier"]["scale_level"],
 				body: "courier", name: null, args: {role: "courier", room: rmColony} });
-        }
+		}
 	},
 
 	loadNukers: function(rmColony) {
@@ -140,11 +140,11 @@ module.exports = {
 			{ action: "empty", labs: ["", "", ...] }
 		*/
 
-        for (let l in listLabs) {
-            let listing = listLabs[l];
-             switch (listing["action"]) {
-                default:
-                    break;
+		for (let l in listLabs) {
+			let listing = listLabs[l];
+			 switch (listing["action"]) {
+				default:
+					break;
 
 				case "boost":
 					let lab = Game.getObjectById(listing["lab"]);
@@ -160,13 +160,13 @@ module.exports = {
 
 					break;
 
-                case "reaction":
+				case "reaction":
 					if (Hive.isPulse_Labs()) {
 						this.assignReaction(rmColony);
 					}
 
-                    let labSupply1 = Game.getObjectById(listing["supply1"]);
-                    let labSupply2 = Game.getObjectById(listing["supply2"]);
+					let labSupply1 = Game.getObjectById(listing["supply1"]);
+					let labSupply2 = Game.getObjectById(listing["supply2"]);
 
 					if (labSupply1 == null && labSupply2 == null)
 						break;
@@ -196,9 +196,9 @@ module.exports = {
 							labReactor.runReaction(labSupply1, labSupply2);
 					});
 
-                    break;
-             }
-        }
+					break;
+			 }
+		}
 	},
 
 	createLabTasks: function(rmColony, listLabs) {
@@ -381,7 +381,7 @@ module.exports = {
 			let filling = new Array();
 			this.runTerminal_Orders(rmColony, storage, terminal, shortage, filling);
 			this.runTerminal_Empty(rmColony, storage, terminal, filling);
-        }
+		}
 	},
 
 	runTerminal_Orders: function (rmColony, storage, terminal, shortage, filling) {
@@ -620,10 +620,10 @@ module.exports = {
 	},
 
 	runCreeps: function (rmColony, listCreeps) {
-        _.each(listCreeps, creep => {
+		_.each(listCreeps, creep => {
 			if (creep.memory.role == "courier") {
 				Roles.Courier(creep);
 			}
-        });
+		});
 	}
 };

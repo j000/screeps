@@ -18,14 +18,14 @@ module.exports = {
 		delete creep.memory.task;
 	},
 
-    runTaskTimer: function(creep) {
-        if (creep.memory.task == null) {
-            return false;
-        }
-        else if (creep.memory.task["timer"] != null) {
+	runTaskTimer: function(creep) {
+		if (creep.memory.task == null) {
+			return false;
+		}
+		else if (creep.memory.task["timer"] != null) {
 			let task = creep.memory.task;
-            task["timer"] = task["timer"] - 1;
-            if (task["timer"] <= 0) {
+			task["timer"] = task["timer"] - 1;
+			if (task["timer"] <= 0) {
 
 				// Prevent burrower from losing task on task refresh, getting blocked by workers
 				if (creep.memory.role == "burrower" && task.subtype == "harvest" && task.resource == "energy"
@@ -34,109 +34,109 @@ module.exports = {
 				}
 
 				this.returnTask(creep);
-                return false;
-            }
-        }
+				return false;
+			}
+		}
 
-        return true;
+		return true;
 	},
 
-    runTask: function(creep) {
-        switch (creep.memory.task["subtype"]) {
-            case "wait":
-                return;
+	runTask: function(creep) {
+		switch (creep.memory.task["subtype"]) {
+			case "wait":
+				return;
 
 			case "boost": {
 				let lab = Game.getObjectById(creep.memory.task["id"]);
-                if (!creep.pos.inRangeTo(lab, 1)) {
-                    creep.moveTo(lab, {reusePath: Hive.moveReusePath()});
+				if (!creep.pos.inRangeTo(lab, 1)) {
+					creep.moveTo(lab, {reusePath: Hive.moveReusePath()});
 					return;
-                } else {    // Wait out timer- should be boosted by then.
-                    return;
-                }
+				} else {	// Wait out timer- should be boosted by then.
+					return;
+				}
 			}
 
-            case "pickup": {
-                let obj = Game.getObjectById(creep.memory.task["id"]);
-                if (creep.pickup(obj) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(obj, {reusePath: Hive.moveReusePath()});
+			case "pickup": {
+				let obj = Game.getObjectById(creep.memory.task["id"]);
+				if (creep.pickup(obj) == ERR_NOT_IN_RANGE) {
+					creep.moveTo(obj, {reusePath: Hive.moveReusePath()});
 					return;
-                } else {    // Action takes one tick... task complete... delete task...
-                    this.finishedTask(creep);
-                    return;
-                }
-            }
+				} else {	// Action takes one tick... task complete... delete task...
+					this.finishedTask(creep);
+					return;
+				}
+			}
 
-            case "withdraw": {
-                let obj = Game.getObjectById(creep.memory.task["id"]);
-                if (creep.withdraw(obj, creep.memory.task["resource"],
+			case "withdraw": {
+				let obj = Game.getObjectById(creep.memory.task["id"]);
+				if (creep.withdraw(obj, creep.memory.task["resource"],
 						(creep.memory.task["amount"] > creep.carryCapacity - _.sum(creep.carry) ? null : creep.memory.task["amount"]))
 						== ERR_NOT_IN_RANGE) {
-                    creep.moveTo(obj, {reusePath: Hive.moveReusePath()});
-                    return;
-                } else {    // Action takes one tick... task complete... delete task...
-                    this.finishedTask(creep);
-                    return;
-                }
-            }
+					creep.moveTo(obj, {reusePath: Hive.moveReusePath()});
+					return;
+				} else {	// Action takes one tick... task complete... delete task...
+					this.finishedTask(creep);
+					return;
+				}
+			}
 
-            case "harvest": {
-                let obj = Game.getObjectById(creep.memory.task["id"]);
-                let pos = new RoomPosition(creep.memory.task["pos"].x, creep.memory.task["pos"].y, creep.memory.task["pos"].roomName);
+			case "harvest": {
+				let obj = Game.getObjectById(creep.memory.task["id"]);
+				let pos = new RoomPosition(creep.memory.task["pos"].x, creep.memory.task["pos"].y, creep.memory.task["pos"].roomName);
 				let result = creep.harvest(obj);
-                if (result == ERR_NOT_IN_RANGE) {
+				if (result == ERR_NOT_IN_RANGE) {
 					if (_.filter(pos.look(), n => n.type == "creep").length == 0)
 						creep.moveTo(pos, {reusePath: Hive.moveReusePath()});
 					else
 						creep.moveTo(obj, {reusePath: Hive.moveReusePath()});
 					return;
-                } else if (result == OK || result == ERR_TIRED) {
+				} else if (result == OK || result == ERR_TIRED) {
 					if (!creep.pos.isEqualTo(pos))
 						creep.moveTo(pos, {reusePath: Hive.moveReusePath()});
-                    return;
-                } else {
+					return;
+				} else {
 					this.finishedTask(creep);
 					return;
 				}
-            }
+			}
 
-            case "upgrade": {
-                let controller = Game.getObjectById(creep.memory.task["id"]);
-                let result = creep.upgradeController(controller);
-                if (result == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(controller, {reusePath: Hive.moveReusePath()});
-                    return;
-                } else if (result != OK) {
-                    this.finishedTask(creep);
-                    return;
-                } else { return; }
-            }
-
-            case "repair": {
-                let structure = Game.getObjectById(creep.memory.task["id"]);
-                let result = creep.repair(structure);
-                if (result == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(structure, {reusePath: Hive.moveReusePath()});
+			case "upgrade": {
+				let controller = Game.getObjectById(creep.memory.task["id"]);
+				let result = creep.upgradeController(controller);
+				if (result == ERR_NOT_IN_RANGE) {
+					creep.moveTo(controller, {reusePath: Hive.moveReusePath()});
 					return;
-                } else if (result != OK || structure.hits == structure.hitsMax) {
-                    this.finishedTask(creep);
-                    return;
-                } else { return; }
-            }
-
-            case "build": {
-                let structure = Game.getObjectById(creep.memory.task["id"]);
-                let result = creep.build(structure);
-                if (result == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(structure, {reusePath: Hive.moveReusePath()});
+				} else if (result != OK) {
+					this.finishedTask(creep);
 					return;
-                } else if (result != OK) {
-                    this.finishedTask(creep);
-                    return;
-                } else { return; }
-            }
+				} else { return; }
+			}
 
-            case "deposit": {
+			case "repair": {
+				let structure = Game.getObjectById(creep.memory.task["id"]);
+				let result = creep.repair(structure);
+				if (result == ERR_NOT_IN_RANGE) {
+					creep.moveTo(structure, {reusePath: Hive.moveReusePath()});
+					return;
+				} else if (result != OK || structure.hits == structure.hitsMax) {
+					this.finishedTask(creep);
+					return;
+				} else { return; }
+			}
+
+			case "build": {
+				let structure = Game.getObjectById(creep.memory.task["id"]);
+				let result = creep.build(structure);
+				if (result == ERR_NOT_IN_RANGE) {
+					creep.moveTo(structure, {reusePath: Hive.moveReusePath()});
+					return;
+				} else if (result != OK) {
+					this.finishedTask(creep);
+					return;
+				} else { return; }
+			}
+
+			case "deposit": {
 				let target = Game.getObjectById(creep.memory.task["id"]);
 				switch (creep.memory.task["resource"]) {
 
@@ -166,58 +166,58 @@ module.exports = {
 						}
 						return;
 				}
-            }
-        }
-    },
-
-    moveToRoom: function(creep, tgtRoom, forwardRoute) {
-        if (creep.room.name == tgtRoom) {
-            console.log("Error: trying to move creep " + creep.name + " to its own room... check logic!!!");
-            return;
-        }
-
-		if (creep.memory.listRoute != null) {
-            if (forwardRoute == true) {
-                for (let i = 1; i < creep.memory.listRoute.length; i++) {
-                    if (creep.room.name == creep.memory.listRoute[i - 1]) {
-                        creep.moveTo(new RoomPosition(25, 25, creep.memory.listRoute[i]), {reusePath: Hive.moveReusePath()});
-                        return;
-                    }
-                }
-            } else if (forwardRoute == false) {
-                for (let i = creep.memory.listRoute.length - 2; i >= 0; i--) {
-                    if (creep.room.name == creep.memory.listRoute[i + 1]) {
-                        creep.moveTo(new RoomPosition(25, 25, creep.memory.listRoute[i]), {reusePath: Hive.moveReusePath()});
-                        return;
-                    }
-                }
-            }
-        }
-
-		if (creep.memory.route == null || creep.memory.route.length == 0 || creep.memory.route == ERR_NO_PATH
-                || creep.memory.route[0].room == creep.room.name || creep.memory.exit == null
-                || creep.memory.exit.roomName != creep.room.name) {
-
-            creep.memory.route = Game.map.findRoute(creep.room, tgtRoom);
-
-            if (creep.memory.route == ERR_NO_PATH) {
-                delete creep.memory.route;
-                return;
-            }
-            creep.memory.exit = creep.pos.findClosestByPath(creep.memory.route[0].exit);
-        }
-
-        if (creep.memory.exit) {
-            creep.moveTo(new RoomPosition(creep.memory.exit.x, creep.memory.exit.y, creep.memory.exit.roomName), {reusePath: Hive.moveReusePath()});
-        }
+			}
+		}
 	},
 
-    moveFrom: function(creep, target) {
-        let tgtDir = creep.pos.getDirectionTo(target);
-        let moveDir, x, y;
+	moveToRoom: function(creep, tgtRoom, forwardRoute) {
+		if (creep.room.name == tgtRoom) {
+			console.log("Error: trying to move creep " + creep.name + " to its own room... check logic!!!");
+			return;
+		}
 
-        switch (tgtDir) {
-            case TOP:
+		if (creep.memory.listRoute != null) {
+			if (forwardRoute == true) {
+				for (let i = 1; i < creep.memory.listRoute.length; i++) {
+					if (creep.room.name == creep.memory.listRoute[i - 1]) {
+						creep.moveTo(new RoomPosition(25, 25, creep.memory.listRoute[i]), {reusePath: Hive.moveReusePath()});
+						return;
+					}
+				}
+			} else if (forwardRoute == false) {
+				for (let i = creep.memory.listRoute.length - 2; i >= 0; i--) {
+					if (creep.room.name == creep.memory.listRoute[i + 1]) {
+						creep.moveTo(new RoomPosition(25, 25, creep.memory.listRoute[i]), {reusePath: Hive.moveReusePath()});
+						return;
+					}
+				}
+			}
+		}
+
+		if (creep.memory.route == null || creep.memory.route.length == 0 || creep.memory.route == ERR_NO_PATH
+				|| creep.memory.route[0].room == creep.room.name || creep.memory.exit == null
+				|| creep.memory.exit.roomName != creep.room.name) {
+
+			creep.memory.route = Game.map.findRoute(creep.room, tgtRoom);
+
+			if (creep.memory.route == ERR_NO_PATH) {
+				delete creep.memory.route;
+				return;
+			}
+			creep.memory.exit = creep.pos.findClosestByPath(creep.memory.route[0].exit);
+		}
+
+		if (creep.memory.exit) {
+			creep.moveTo(new RoomPosition(creep.memory.exit.x, creep.memory.exit.y, creep.memory.exit.roomName), {reusePath: Hive.moveReusePath()});
+		}
+	},
+
+	moveFrom: function(creep, target) {
+		let tgtDir = creep.pos.getDirectionTo(target);
+		let moveDir, x, y;
+
+		switch (tgtDir) {
+			case TOP:
 				moveDir = BOTTOM;
 				x = 0; y = 1;
 				break;
@@ -256,35 +256,35 @@ module.exports = {
 				moveDir = BOTTOM_RIGHT;
 				x = 1; y = 1;
 				break;
-        }
+		}
 
 		if (new RoomPosition(creep.pos.x + x, creep.pos.y + y, creep.pos.roomName).lookFor("terrain") == "wall")
 			moveDir = Math.floor(Math.random() * 8) + 1;
 
-        return creep.move(moveDir);
-    },
+		return creep.move(moveDir);
+	},
 
-    getBody: function(type, level) {
+	getBody: function(type, level) {
 		_Body = require("util.creep.body");
 
-        switch (type) {
-            case "soldier": return _Body.getBody_Soldier(level);
+		switch (type) {
+			case "soldier": return _Body.getBody_Soldier(level);
 			case "brawler": return _Body.getBody_Brawler(level);
 			case "paladin": return _Body.getBody_Paladin(level);
-            case "archer": return _Body.getBody_Archer(level);
-            case "healer": return _Body.getBody_Healer(level);
-            case "multirole": return _Body.getBody_Multirole(level);
-            case "worker": return _Body.getBody_Worker(level);
+			case "archer": return _Body.getBody_Archer(level);
+			case "healer": return _Body.getBody_Healer(level);
+			case "multirole": return _Body.getBody_Multirole(level);
+			case "worker": return _Body.getBody_Worker(level);
 			case "worker_at": return _Body.getBody_Worker_AT(level);
-            case "burrower": return _Body.getBody_Burrower(level);
+			case "burrower": return _Body.getBody_Burrower(level);
 			case "burrower_at": return _Body.getBody_Burrower_AT(level);
 			case "extractor": return _Body.getBody_Extractor(level);
 			case "extractor_rem": return _Body.getBody_Extractor_REM(level);
-            case "courier":
-            case "carrier": return _Body.getBody_Carrier(level);
-            case "carrier_at": return _Body.getBody_Carrier_AT(level);
-            case "reserver": return _Body.getBody_Reserver(level);
+			case "courier":
+			case "carrier": return _Body.getBody_Carrier(level);
+			case "carrier_at": return _Body.getBody_Carrier_AT(level);
+			case "reserver": return _Body.getBody_Reserver(level);
 			case "reserver_at": return _Body.getBody_Reserver_AT(level);
-        }
+		}
 	},
 };

@@ -56,7 +56,7 @@ So you have some minerals and want your labs to process them? Or boost your cree
 
 ```
 Sites.Industry("W18S43", 2,
-	{ courier:   {level: 5, amount: 1} },            
+	{ courier:   {level: 5, amount: 1} },
 	[ { action: "reaction", mineral: "G", amount: 25000,
 		supply1: "57da4f4df77673f57f674b8e", supply2: "57da17db81f808d96870b7fb",
 		reactors: [ "57d97c52cfda43d45247083e", "57d9cf9924d28b4e75fa36b0"] } ]);

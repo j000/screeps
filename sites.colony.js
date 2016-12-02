@@ -22,15 +22,15 @@ module.exports = {
 
 		_CPU.Start(rmColony, "Colony-runCreeps");
 		this.runCreeps(rmColony, listCreeps, listRoute);
-        _CPU.End(rmColony, "Colony-runCreeps");
+		_CPU.End(rmColony, "Colony-runCreeps");
 
 		_CPU.Start(rmColony, "Colony-runTowers");
 		this.runTowers(rmColony);
-        _CPU.End(rmColony, "Colony-runTowers");
+		_CPU.End(rmColony, "Colony-runTowers");
 
 		_CPU.Start(rmColony, "Colony-runLinks");
 		this.runLinks(rmColony, listLinks);
-        _CPU.End(rmColony, "Colony-runLinks");
+		_CPU.End(rmColony, "Colony-runLinks");
 	},
 		
 	surveyRoom: function(rmColony) {
@@ -47,40 +47,40 @@ module.exports = {
 
 	runPopulation: function(rmColony, listCreeps, listSpawnRooms, listPopulation) {
 		let lWorker = _.filter(listCreeps, c => c.memory.role == "worker" && c.memory.subrole == null);
-        let lRepairer = _.filter(listCreeps, c => c.memory.role == "worker" && c.memory.subrole == "repairer");
-        let lUpgrader = _.filter(listCreeps, c => c.memory.role == "worker" && c.memory.subrole == "upgrader");
-        let lSoldier = _.filter(listCreeps, c => c.memory.role == "soldier");
+		let lRepairer = _.filter(listCreeps, c => c.memory.role == "worker" && c.memory.subrole == "repairer");
+		let lUpgrader = _.filter(listCreeps, c => c.memory.role == "worker" && c.memory.subrole == "upgrader");
+		let lSoldier = _.filter(listCreeps, c => c.memory.role == "soldier");
 
-        let popTarget =
-            (listPopulation["worker"] == null ? 0 : listPopulation["worker"]["amount"])
-            + (listPopulation["repairer"] == null ? 0 : listPopulation["repairer"]["amount"])
-            + (listPopulation["upgrader"] == null ? 0 : listPopulation["upgrader"]["amount"])
-            + (listPopulation["soldier"] == null ? 0 : listPopulation["soldier"]["amount"]);
-        let popActual = lWorker.length + lRepairer.length + lUpgrader.length + lSoldier.length;
-        Hive.populationTally(rmColony, popTarget, popActual);
+		let popTarget =
+			(listPopulation["worker"] == null ? 0 : listPopulation["worker"]["amount"])
+			+ (listPopulation["repairer"] == null ? 0 : listPopulation["repairer"]["amount"])
+			+ (listPopulation["upgrader"] == null ? 0 : listPopulation["upgrader"]["amount"])
+			+ (listPopulation["soldier"] == null ? 0 : listPopulation["soldier"]["amount"]);
+		let popActual = lWorker.length + lRepairer.length + lUpgrader.length + lSoldier.length;
+		Hive.populationTally(rmColony, popTarget, popActual);
 
-        if ((listPopulation["soldier"] != null && lSoldier.length < listPopulation["soldier"]["amount"])
-            || (lSoldier.length < _.get(Memory, ["rooms", rmColony, "amount_hostiles"]))) {
+		if ((listPopulation["soldier"] != null && lSoldier.length < listPopulation["soldier"]["amount"])
+			|| (lSoldier.length < _.get(Memory, ["rooms", rmColony, "amount_hostiles"]))) {
 			Memory["spawn_requests"].push({ room: rmColony, listRooms: listSpawnRooms, priority: 0,
 				level: (listPopulation["soldier"] == null ? 8 : listPopulation["soldier"]["level"]),
 				scale_level: listPopulation["soldier"] == null ? true : listPopulation["soldier"]["scale_level"],
 				body: "soldier", name: null, args: {role: "soldier", room: rmColony} });
-        } else if (listPopulation["worker"] != null && lWorker.length < listPopulation["worker"]["amount"]) {
+		} else if (listPopulation["worker"] != null && lWorker.length < listPopulation["worker"]["amount"]) {
 			Memory["spawn_requests"].push({ room: rmColony, listRooms: listSpawnRooms, priority: 3, level: listPopulation["worker"]["level"],
 				scale_level: listPopulation["worker"] == null ? true : listPopulation["worker"]["scale_level"],
 				body: (listPopulation["worker"]["body"] || "worker"),				
 				name: null, args: {role: "worker", room: rmColony} });
-        } else if (listPopulation["repairer"] != null && lRepairer.length < listPopulation["repairer"]["amount"]) {
+		} else if (listPopulation["repairer"] != null && lRepairer.length < listPopulation["repairer"]["amount"]) {
 			Memory["spawn_requests"].push({ room: rmColony, listRooms: listSpawnRooms, priority: 4, level: listPopulation["repairer"]["level"],
 				scale_level: listPopulation["repairer"] == null ? true : listPopulation["repairer"]["scale_level"],
 				body: (listPopulation["repairer"]["body"] || "worker"),
 				name: null, args: {role: "worker", subrole: "repairer", room: rmColony} });
-        } else if (listPopulation["upgrader"] != null && lUpgrader.length < listPopulation["upgrader"]["amount"]) {
+		} else if (listPopulation["upgrader"] != null && lUpgrader.length < listPopulation["upgrader"]["amount"]) {
 			Memory["spawn_requests"].push({ room: rmColony, listRooms: listSpawnRooms, priority: 4, level: listPopulation["upgrader"]["level"],
 				scale_level: listPopulation["upgrader"] == null ? true : listPopulation["upgrader"]["scale_level"],
 				body: (listPopulation["upgrader"]["body"] || "worker"),
 				name: null, args: {role: "worker", subrole: "upgrader", room: rmColony} });
-        }
+		}
 	},
 
 
@@ -96,7 +96,7 @@ module.exports = {
 			else if (creep.memory.role == "soldier") {
 				Roles.Soldier(creep, false, true);
 			}
-        });
+		});
 	},
 
 
@@ -142,20 +142,20 @@ module.exports = {
 	runLinks: function (rmColony, listLinks) {
 		Memory["rooms"][rmColony]["links"] = listLinks;
 		if (listLinks != null) {
-            let linksSend = _.filter(listLinks, l => { return l["dir"] == "send"; });
-            let linksReceive = _.filter(listLinks, l => { return l["dir"] == "receive"; });
+			let linksSend = _.filter(listLinks, l => { return l["dir"] == "send"; });
+			let linksReceive = _.filter(listLinks, l => { return l["dir"] == "receive"; });
 
-            _.each(linksReceive, r => {
+			_.each(linksReceive, r => {
 				let receive = Game.getObjectById(r["id"]);
-                _.each(linksSend, s => {
+				_.each(linksSend, s => {
 					if (r["role"] == s["role"] && receive != null) {
 						let send = Game.getObjectById(s["id"]);
 						if (send != null && send.energy > send.energyCapacity * 0.25 && receive.energy < receive.energyCapacity * 0.9) {
 							send.transferEnergy(receive);
 						}
 					}
-                });
-            });
-        }
+				});
+			});
+		}
 	}
 };

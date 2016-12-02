@@ -9,17 +9,17 @@ module.exports = {
 
 	addTask: function (rmName, incTask) {
 		/* Task format:
-			type:       combat | work | mine | carry | energy | industry | wait
-			subtype:    pickup | withdraw | deposit | harvest | upgrade | repair | dismantle | attack | defend | heal | wait
+			type:	   combat | work | mine | carry | energy | industry | wait
+			subtype:	pickup | withdraw | deposit | harvest | upgrade | repair | dismantle | attack | defend | heal | wait
 			priority:   on a scale of 1-10; only competes with tasks of same type
 			structure:  link | storage
 			resource:   energy | mineral
 			amount:		#
-			id:         target gameobject id
-			pos:        room position
-			timer:      run for x ticks
-			goal:       e.g. hp goal for repairing, amount to deposit, etc.
-			creeps:     maximum # of creeps to run this task
+			id:		 target gameobject id
+			pos:		room position
+			timer:	  run for x ticks
+			goal:	   e.g. hp goal for repairing, amount to deposit, etc.
+			creeps:	 maximum # of creeps to run this task
 		 */
 
 		if (incTask.key == null)
@@ -50,7 +50,7 @@ module.exports = {
 		let task = creep.memory.task;
 
 		if (task == null)
-		    return;
+			return;
 
 		if (Memory["rooms"][task.room]["tasks_running"] != null && Memory["rooms"][task.room]["tasks_running"][task.key])
 			delete Memory["rooms"][task.room]["tasks_running"][task.key][creep.name];
@@ -185,7 +185,7 @@ module.exports = {
 			if (task != null) {
 				this.giveTask(creep, task);
 				return;
-			} else {    // If no tasks, then wait
+			} else {	// If no tasks, then wait
 				this.giveTask(creep, {type: "wait", subtype: "wait", timer: 10});
 				return;
 			}

@@ -68,14 +68,14 @@ module.exports = {
 			return `<font color=\"#6065FF\">[Blueprint]</font> Blueprint.set() failed: ${rmName} == null`;
 
 		let room = Game.rooms[rmName];
-		let myRoom = room.controller ? room.controller.my : false;		
+		let myRoom = room.controller ? room.controller.my : false;
 		let results = new Object();
-		
+
 		_.each(room.find(FIND_STRUCTURES).concat(room.find(FIND_CONSTRUCTION_SITES)), s => {
 
 			if (limit != null && _.sum(results) > limit)
 				return;
-		
+
 			let type = s.structureType;
 			if (type == "road" || type == "container"
 				|| (myRoom && (type == "spawn" || type == "extension" || type == "constructedWall"
@@ -83,9 +83,9 @@ module.exports = {
 					|| type == "tower" || type == "observer" || type == "powerSpawn"
 					|| type == "extractor" || type == "lab" || type == "terminal"
 					|| type == "nuker"))) {
-			
+
 				let flags = s.pos.lookFor("flag");
-				let key = _.find(Blueprint_Keys, k => { return k.structure == type; });					
+				let key = _.find(Blueprint_Keys, k => { return k.structure == type; });
 
 				if (_.filter(flags, f => { return f.color == key["color"] && f.secondaryColor == key["secondaryColor"]; }).length > 0) {
 					results["existed"] = _.get(results, ["existed"], 0) + 1;

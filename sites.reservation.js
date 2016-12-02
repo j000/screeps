@@ -44,6 +44,6 @@ module.exports = {
 			if (creep.memory.role == "reserver") {
 				Roles.Reserver(creep);
 			}
-        });
+		});
 	}
 };
