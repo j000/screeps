@@ -10,8 +10,12 @@ var getReagents2 = function (mineral) {
 
 try {
 	getReagents = getReagents2;
-} catch (e if e instanceof ReferenceError) {
-	var getReagents = getReagents2;
+} catch (e) {
+	if (e instanceof ReferenceError) {
+		var getReagents = getReagents2;
+	} else {
+		throw e;
+	}
 }
 
 Math.clamp = function (number, lower, upper) {
